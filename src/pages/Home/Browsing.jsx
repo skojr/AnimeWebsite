@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Browsing.css";
 
+import { useNavigate } from "react-router-dom";
+
 export const Browsing = () => {
   const [topAnime, setTopAnime] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getTopAnime = async () => {
@@ -22,10 +26,13 @@ export const Browsing = () => {
     const intervalId = setInterval(() => {
       getTopAnime();
     }, 86400000);
-  
-    return () => clearInterval(intervalId);
 
+    return () => clearInterval(intervalId);
   }, []);
+
+  const handleAnimeClick = (anime) => {
+    navigate(`/about/${anime.title_english}`, { state: anime });
+  };
 
   return (
     <div className="browsing-container">
@@ -33,7 +40,9 @@ export const Browsing = () => {
 
       <div className="content-container">
         <h1 className="browsing-msg">DISCOVER TRENDING ANIME. YUKO!</h1>
-        <p className="browsing-caption">Scroll through today's top 25 most popular anime</p>
+        <p className="browsing-caption">
+          Scroll through today's top 25 most popular anime
+        </p>
         <div
           id="carouselExampleAutoplaying"
           className="carousel slide"
@@ -50,12 +59,15 @@ export const Browsing = () => {
                 >
                   <div className="row justify-content-center">
                     {topAnime.slice(start, end).map((anime, subIndex) => (
-                      <div key={subIndex} className="col-md-3">
+                      <div key={subIndex} 
+                      className="col-md-3"
+                      onClick={() => handleAnimeClick(anime)}
+
+                      >
                         <img
                           className="carousel-img"
                           src={anime.images.jpg.large_image_url}
                           alt={anime.title}
-                          href=""
                         />
                         <h1 className="anime-title text-white">
                           {anime.title_english}
