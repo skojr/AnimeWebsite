@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./Browsing.css";
-
 import { useNavigate } from "react-router-dom";
 
 export const Browsing = () => {
@@ -35,7 +34,7 @@ export const Browsing = () => {
   };
 
   return (
-    <div className="browsing-container">
+    <div className="browsing-container" id="browse">
       <div className="browsing-overlay"></div>
 
       <div className="content-container">
