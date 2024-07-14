@@ -1,54 +1,33 @@
-import { React, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { register, login } from "./AuthService";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import "./SignUp.css";
 
 export const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-
   const navigate = useNavigate();
-
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:8080/api/users/signup",
-        {
-          email,
-          username,
-          password,
-        }
-      );
-      console.log(response.data);
-      navigate("/");
+      await register(email, password);
+      toast.success("Signed up successfully!")
+      setTimeout(() => {
+        navigate("/");
+      }, 5000)
+      const loginResponse = await login(email, password);
+      return loginResponse;
     } catch (error) {
-      console.log("Signup error:", error);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        setErrorMessage(
-          error.response.data || "An error occurred during signup"
-        );
-      } else if (error.request) {
-        // The request was made but no response was received
-        setErrorMessage("No response received from server");
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        setErrorMessage("Error setting up the request");
-      }
+      toast.error("Registration failed" + error);
     }
+
   };
 
   return (
     <div className="signup-container">
-      {errorMessage && (
-        <div className="alert alert-danger" role="alert">
-          {errorMessage}
-        </div>
-      )}
       <div className="signup-overlay"></div>
       <div className="form-container">
         <form className="form" onSubmit={handleSignUp}>
@@ -66,18 +45,7 @@ export const SignUp = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div className="mb-3">
-            <label htmlFor="InputUsername" className="form-label">
-              Username
-            </label>
-            <input
-              type="username"
-              id="inputUsername"
-              className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
+          
           <div className="mb-3">
             <label htmlFor="exampleInputPassword1" className="form-label">
               Password
@@ -96,6 +64,7 @@ export const SignUp = () => {
           </button>
         </form>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };

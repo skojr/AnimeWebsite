@@ -1,11 +1,25 @@
 import { animateScroll } from "react-scroll";
 import "./Navbar.css";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getCurrentUser, logout } from "../../auth/AuthService";
+import { useEffect, useState } from "react";
 
 export const Navbar = () => {
-
   const navigate = useNavigate();
   const location = useLocation();
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getCurrentUser();
+      setUserId(user);
+    };
+    fetchUser();
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   const handleNavClick = (path, section) => {
     if (location.pathname === "/" && section) {
@@ -22,7 +36,7 @@ export const Navbar = () => {
     <nav className="navbar navbar-expand-lg bg-dark fixed-top p-3">
       <div className="container-fluid">
         <a
-          className="navbar-brand mx-5"
+          className="navbar-brand me-5"
           href="#"
           onClick={() => handleNavClick("/", "hero")}
         >
@@ -43,22 +57,56 @@ export const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div className="navbar-nav">
             <a
-              className="nav-link active mx-3"
+              className="nav-link active small-nav-item"
               aria-current="page"
               href="#"
               onClick={() => handleNavClick("/", "hero")}
             >
               Home
             </a>
-            <a className="nav-link mx-3" href="#">
+            <a className="nav-link small-nav-item" href="#">
               Survey
             </a>
-            <a className="nav-link mx-3" href="#">
+            <a
+              className="nav-link small-nav-item"
+              aria-current="page"
+              href="/profile"
+              onClick={() => handleNavClick("/profile", "profile")}
+            >
               Profile
             </a>
-            <a className="nav-link mx-3" href="#">
+            <a className="nav-link small-nav-item" href="#">
               Settings
             </a>
+            {userId ? (
+              <>
+                <button
+                  className="nav-link mx-2 btn btn-link small-nav-item"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <a
+                  className="nav-link small-nav-item"
+                  aria-current="page"
+                  href="/login"
+                  onClick={() => handleNavClick("/login")}
+                >
+                  Login
+                </a>
+                <a
+                  className="nav-link small-nav-item"
+                  aria-current="page"
+                  href="/signup"
+                  onClick={() => handleNavClick("/signup")}
+                >
+                  Register
+                </a>
+              </>
+            )}
           </div>
         </div>
       </div>

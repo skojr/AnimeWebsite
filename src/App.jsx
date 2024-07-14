@@ -1,12 +1,15 @@
-import React from "react";
 import "./App.css";
 import { Navbar } from "./components/Navbar/Navbar";
 import { HomePage } from "./pages/Home/HomePage";
 import { AboutPage } from "./pages/About/AboutPage.jsx";
 import { NotFoundPage } from "./pages/NotFoundPage.jsx";
-import { Login } from "./pages/Profile/Login.jsx";
+import { Login } from "./auth/Login.jsx";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import { SignUp } from "./pages/Profile/SignUp.jsx";
+import { SignUp } from "./auth/SignUp.jsx";
+import { Profile } from "./pages/Profile/Profile.jsx";
+import { ProtectedRoutes } from "./auth/ProtectedRoutes.jsx";
+import { useEffect, useState } from "react";
+import { getCurrentUser } from "./auth/AuthService.jsx";
 
 const Layout = () => (
   <>
@@ -29,18 +32,28 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login />
+        element: <Login />,
       },
       {
         path: "/signup",
-        element: <SignUp />
-      }
+        element: <SignUp />,
+      },
+      {
+        path: "/profile",
+        element: (
+          <ProtectedRoutes>
+            <Profile />
+          </ProtectedRoutes>
+        ),
+      },
     ],
     errorElement: <NotFoundPage />,
   },
 ]);
 
 function App() {
+  
+
   return <RouterProvider router={router} />;
 }
 
