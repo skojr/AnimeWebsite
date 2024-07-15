@@ -35,10 +35,10 @@ export const logout = async () => {
 };
 
 export const getCurrentUser = async () => {
-    const userId = localStorage.getItem("userId");
-    if (!userId || userId === "null" || userId === "") {
-      return null;
-    }
+  const userId = localStorage.getItem("userId");
+  if (!userId || userId === "null" || userId === "") {
+    return null;
+  }
   try {
     const response = await axios.get(`${baseUrl}/users/${userId}`);
     console.log(response.data);
@@ -48,6 +48,45 @@ export const getCurrentUser = async () => {
     return null;
   }
 };
+
+export const deleteUser = async (password) => {
+  const userId = localStorage.getItem("userId");
+  try {
+    const response = await axios.delete(`${baseUrl}/users/${userId}`, {
+      data: { password },
+    });
+    if (response.status === 200) {
+      localStorage.removeItem("userId");
+      localStorage.clear();
+    }
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.message || "Failed to delete user");
+    } else if (error.request) {
+      throw new Error("No response received from server");
+    } else {
+      throw new Error("Error in setting up the request");
+    }
+  }
+};
+
+export const updateUser = async (updateData) => {
+    const userId = localStorage.getItem("userId");
+    try {
+        const response = await axios.put(`${baseUrl}/users/${userId}`, updateData);
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.message || "Failed to update user");
+        } else if (error.request) {
+            throw new Error("No response received from server");
+        } else {
+            throw new Error("Error in setting up the request");
+        }
+    }
+}
+
 
 const handleError = (error, defaultMessage) => {
   if (error.response) {

@@ -19,7 +19,6 @@ export const Login = () => {
         toast.success("Logged in successfully!");
         setTimeout(() => {
           navigate("/", { replace: true });
-          // If you really need to reload, do it after navigation
           window.location.reload();
         }, 3000);
       } else {

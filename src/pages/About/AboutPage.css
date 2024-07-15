@@ -21,8 +21,7 @@
 }
 
 .abt-content-container {
-  color: white;
-  z-index: 1;
+width: 70%;
 }
 
 .about-detail {
@@ -33,4 +32,67 @@
   margin-top: 10%;
   margin-right: 10%;
   text-align: left;
+  padding: auto;
+}
+
+
+.abt-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px; /* This creates space between the columns */
+}
+
+.col-md-6 {
+  flex: 1;
+  min-width: 300px; /* Adjust as needed */
+}
+
+.about-image-container {
+  background-color: rgba(40, 44, 52, 0.85); /* Dark grayish with 85% opacity */
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px); /* Adds a blur effect to content behind the card */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  overflow-y: auto;
+  height: 70vh;
+  margin-top: 3%;
+}
+
+.about-synopsis-container {
+   background-color: rgba(40, 44, 52, 0.85); /* Dark grayish with 85% opacity */
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  height: 100%;
+  max-height: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px); /* Adds a blur effect to content behind the card */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  overflow-y: auto;
+  padding: auto;
+  margin-top: 3%;
+
+}
+
+.synopsis-text {
+  color: white;
+  font-weight: bold;
+  font-size: 22px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  padding: 25px;
+  margin-top: 5%;
+}
+
+.synopsis-title {
+  margin-top: 3%;
+  margin-bottom: 2%;
+}
+
+.anime-title {
+  margin-top: 3%;
+  margin-bottom: 2%;
 }

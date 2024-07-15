@@ -16,8 +16,9 @@ export const SignUp = () => {
       await register(email, password);
       toast.success("Signed up successfully!")
       setTimeout(() => {
-        navigate("/");
-      }, 5000)
+        navigate("/", { replace: true });
+        window.location.reload();
+      }, 3000);
       const loginResponse = await login(email, password);
       return loginResponse;
     } catch (error) {

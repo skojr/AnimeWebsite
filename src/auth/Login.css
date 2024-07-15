@@ -1,5 +1,5 @@
 .login-container {
-    background-image: url("../../assets/loginImage.jpg");
+    background-image: url("../assets/loginImage.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -25,7 +25,7 @@
 .form-container {
     margin-top: 5%;
     z-index: 1;
-    background-color: white;
+    background-color: rgb(226, 225, 225) !important;
     width: 30%; /* Set a maximum width for the form container */
     height: 80%; /* Allow the height to adjust based on content */
     border-radius: 20px;
@@ -76,6 +76,6 @@
 
 .login-text {
     font-size: 1.5rem;
-    margin-top: 10%;
+    margin-top: 5%;
 }
 

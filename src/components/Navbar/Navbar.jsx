@@ -3,23 +3,37 @@ import "./Navbar.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getCurrentUser, logout } from "../../auth/AuthService";
 import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       const user = await getCurrentUser();
-      setUserId(user);
+      setUser(user);
     };
     fetchUser();
   }, []);
 
   const handleLogout = () => {
-    logout();
+    try {
+      logout();
+      toast.success("Deleted user successfully!");
+      setTimeout(() => {
+        navigate("/", { replace: true });
+        window.location.reload();
+      }, 3000);
+    } catch (error) {
+      console.log(error.message);
+    }
+    
+
   };
+
 
   const handleNavClick = (path, section) => {
     if (location.pathname === "/" && section) {
@@ -75,17 +89,17 @@ export const Navbar = () => {
             >
               Profile
             </a>
-            <a className="nav-link small-nav-item" href="#">
-              Settings
-            </a>
-            {userId ? (
+            {user ? (
               <>
                 <button
-                  className="nav-link mx-2 btn btn-link small-nav-item"
+                  className="nav-link mx-5 btn btn-link small-nav-item"
                   onClick={handleLogout}
                 >
                   Logout
                 </button>
+                <div className="small-nav-item nav-item text-light ms-3">
+                  {user.email}
+                </div>
               </>
             ) : (
               <>
@@ -110,6 +124,8 @@ export const Navbar = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
+
     </nav>
   );
 };

@@ -11,12 +11,35 @@ export const Browsing = () => {
   useEffect(() => {
     const getTopAnime = async () => {
       try {
-        const response = await axios.get("https://api.jikan.moe/v4/top/anime");
+        const response = await axios.get("https://api.jikan.moe/v4/top/manga");
         const data = response.data;
         console.log(data);
-        setTopAnime(data.data.slice(0, 25));
+
+        const uniqueTitles = new Set();
+        let gintamaIncluded = false;
+
+        const filteredAnime = data.data.filter((anime) => {
+          const title = anime.title_english || anime.title;
+
+          if (title.includes("Gintama")) {
+            if (!gintamaIncluded) {
+              gintamaIncluded = true;
+              uniqueTitles.add(title);
+              return true;
+            }
+            return false;
+          }
+
+          if (!uniqueTitles.has(title)) {
+            uniqueTitles.add(title);
+            return true;
+          }
+          return false;
+        });
+
+        setTopAnime(filteredAnime.slice(0, 25));
       } catch (error) {
-        console.error("An error occured:", error);
+        console.error("An error occurred:", error);
       }
     };
 
@@ -58,10 +81,10 @@ export const Browsing = () => {
                 >
                   <div className="row justify-content-center">
                     {topAnime.slice(start, end).map((anime, subIndex) => (
-                      <div key={subIndex} 
-                      className="col-md-3"
-                      onClick={() => handleAnimeClick(anime)}
-
+                      <div
+                        key={subIndex}
+                        className="col-md-3"
+                        onClick={() => handleAnimeClick(anime)}
                       >
                         <img
                           className="carousel-img"
@@ -69,7 +92,9 @@ export const Browsing = () => {
                           alt={anime.title}
                         />
                         <h1 className="anime-title text-white">
-                          {anime.title_english}
+                          {anime.title_english
+                            ? anime.title_english
+                            : anime.title}
                         </h1>
                       </div>
                     ))}

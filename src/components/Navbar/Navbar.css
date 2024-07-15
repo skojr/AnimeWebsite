@@ -40,7 +40,7 @@
 .navbar-phrase {
   font-size: 36px;
   color: rgb(170, 168, 168) !important;
-  margin-left: 5%;
+  margin-left: 3%;
 }
 
 .navbar-toggler {
@@ -49,4 +49,11 @@
 
 .nav-link {
   margin-left: 10% !important;
+}
+
+.navbar-nav .nav-item{
+  color: white !important; 
+  padding: 1rem 1.5rem; 
+  position: relative; 
+  font-size: 36px;
 }

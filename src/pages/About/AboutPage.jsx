@@ -1,5 +1,5 @@
 import "./AboutPage.css";
-import { useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export const AboutPage = () => {
   const location = useLocation();
@@ -8,19 +8,24 @@ export const AboutPage = () => {
   return (
     <div className="about-container">
       <div className="about-overlay"></div>
-      <div className="abt-content-container container-fluid text-center">
-        <div className="row container-fluid">
-          {" "}
-          <div className="col">
-            <h1 className="mb-4">{anime.title_english}</h1>
-            <img
-              src={anime.images.jpg.large_image_url}
-              alt={anime.title_english}
-            />
+      <div className="abt-content-container container-fluid">
+        <div className="row abt-row">
+          <div className="col-md-6">
+            <div className="about-image-container">
+              <h1 className="anime-title">{anime.title_english
+                            ? anime.title_english
+                            : anime.title}</h1>
+              <img
+                src={anime.images.jpg.large_image_url}
+                alt={anime.title_english}
+                className="anime-image"
+              />
+            </div>
           </div>
-          <div className="col">
-            <div className="about-detail">
-              <p> {anime.synopsis}</p>
+          <div className="col-md-6">
+            <div className="about-synopsis-container">
+              <h1 className="synopsis-title">Synopsis</h1>
+              <p className="synopsis-text">{anime.synopsis}</p>
             </div>
           </div>
         </div>
