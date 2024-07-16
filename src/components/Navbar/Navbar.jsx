@@ -1,7 +1,11 @@
 import { animateScroll } from "react-scroll";
 import "./Navbar.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getCurrentUser, logout } from "../../auth/AuthService";
+import {
+  getCurrentUser,
+  isAuthenticated,
+  logout,
+} from "../../auth/AuthService";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,20 +13,14 @@ import "react-toastify/dist/ReactToastify.css";
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await getCurrentUser();
-      setUser(user);
-    };
-    fetchUser();
-  }, []);
+  const token = getCurrentUser();
 
   const handleLogout = () => {
     try {
-      logout();
-      toast.success("Deleted user successfully!");
+      localStorage.clear();
+      localStorage.removeItem("token");
+      toast.success("Logged out successfully!");
       setTimeout(() => {
         navigate("/", { replace: true });
         window.location.reload();
@@ -30,10 +28,7 @@ export const Navbar = () => {
     } catch (error) {
       console.log(error.message);
     }
-    
-
   };
-
 
   const handleNavClick = (path, section) => {
     if (location.pathname === "/" && section) {
@@ -89,7 +84,7 @@ export const Navbar = () => {
             >
               Profile
             </a>
-            {user ? (
+            {token ? (
               <>
                 <button
                   className="nav-link mx-5 btn btn-link small-nav-item"
@@ -98,7 +93,7 @@ export const Navbar = () => {
                   Logout
                 </button>
                 <div className="small-nav-item nav-item text-light ms-3">
-                  {user.email}
+                  {token.sub}
                 </div>
               </>
             ) : (
@@ -125,7 +120,6 @@ export const Navbar = () => {
         </div>
       </div>
       <ToastContainer position="top-right" autoClose={3000} />
-
     </nav>
   );
 };

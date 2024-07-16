@@ -1,5 +1,10 @@
 import "./Profile.css";
-import { deleteUser, getCurrentUser, logout, updateUser } from "../../auth/AuthService";
+import {
+  deleteUser,
+  getCurrentUser,
+  logout,
+  updateUser,
+} from "../../auth/AuthService";
 import { useEffect, useState } from "react";
 import { DeleteConfirmationModal } from "../../auth/DeletionConfirmationModal";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import UpdateUserModal from "../../auth/UpdateUserModal";
 
 export const Profile = () => {
-  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -20,8 +25,8 @@ export const Profile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
+        const token = await getCurrentUser();
+        setToken(token);
       } catch (error) {
         console.error("Error fetching user:", error);
       } finally {
@@ -64,27 +69,31 @@ export const Profile = () => {
     } catch (error) {
       console.log(error.message);
     }
-  }
-  
+  };
+
   const handleUpdateUser = async (updateData) => {
     try {
       await updateUser(updateData);
       setIsUpdateModalOpen(false);
-      toast.success("Updated user successfully!");
+      toast.info(
+        "Your account has been updated. You will be logged out in 3 seconds. Please log in again with your new credentials."
+      );
       setTimeout(() => {
-        navigate("/profile", { replace: true });
-        window.location.reload();
+        localStorage.clear();
+        localStorage.removeItem("token");
+        navigate("/login", { replace: true });
       }, 3000);
     } catch (error) {
       console.log(error.message);
-      toast.error("Failed to update.")
+      toast.error("Failed to update.");
     }
   };
 
   const handleLogoutClick = () => {
     try {
-      logout();
-      toast.success("Deleted user successfully!");
+      localStorage.clear();
+      localStorage.removeItem("token");
+      toast.success("Logged out successfully!");
       setTimeout(() => {
         navigate("/", { replace: true });
         window.location.reload();
@@ -92,8 +101,6 @@ export const Profile = () => {
     } catch (error) {
       console.log(error.message);
     }
-    
-
   };
 
   return (
@@ -109,17 +116,19 @@ export const Profile = () => {
                 </div>
               </div>
               <div className="card-body d-flex flex-column align-items-center">
-                <h5 className="card-title mb-4 mt-5">{user.email}</h5>
-                <button 
-                type="click"
-                onClick={handleUpdateClick}
-                className="btn btn-primary custom-btn mb-3">
+                <h5 className="card-title mb-4 mt-5">{token.sub}</h5>
+                <button
+                  type="click"
+                  onClick={handleUpdateClick}
+                  className="btn btn-primary custom-btn mb-3"
+                >
                   UPDATE ACCOUNT
                 </button>
-                <button 
-                type="click"
-                onClick={handleLogoutClick}
-                className="btn btn-primary custom-btn mb-3">
+                <button
+                  type="click"
+                  onClick={handleLogoutClick}
+                  className="btn btn-primary custom-btn mb-3"
+                >
                   LOGOUT
                 </button>
                 <button
