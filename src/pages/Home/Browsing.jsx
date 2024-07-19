@@ -11,7 +11,7 @@ export const Browsing = () => {
   useEffect(() => {
     const getTopAnime = async () => {
       try {
-        const response = await axios.get("https://api.jikan.moe/v4/top/manga");
+        const response = await axios.get("https://api.jikan.moe/v4/top/anime?filter=bypopularity");
         const data = response.data;
         console.log(data);
 
@@ -21,7 +21,7 @@ export const Browsing = () => {
         const filteredAnime = data.data.filter((anime) => {
           const title = anime.title_english || anime.title;
 
-          if (title.includes("Gintama")) {
+          if (title.includes("Attack on Titan")) {
             if (!gintamaIncluded) {
               gintamaIncluded = true;
               uniqueTitles.add(title);

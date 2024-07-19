@@ -194,6 +194,31 @@ export const updateUser = async (updateData) => {
   }
 };
 
+const map = {
+    "Short": 12,
+    "Medium": 13,
+    "Long": 25
+}
+
+export const fetchSurveyData = async (genreId, lengthCategory) => {
+    const response = await axios.get(`https://api.jikan.moe/v4/anime?genres=${genreId}&order_by=popularity`);
+    const data = response.data.data;
+    // const filteredByLength = response.data.data.filter(anime => {
+    //   switch(lengthCategory) {
+    //     case 'short':
+    //       return anime.episodes > 0 && anime.episodes <= 12;
+    //     case 'medium':
+    //       return anime.episodes > 12 && anime.episodes <= 24;
+    //     case 'long':
+    //       return anime.episodes > 24;
+    //     default:
+    //       return true;
+    //   }
+    // });
+  
+    return data; // Return top 5
+  };
+
 export const isAuthenticated = () => {
   const token = localStorage.getItem("token");
   if (!token) return false;

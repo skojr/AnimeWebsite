@@ -2,8 +2,8 @@ import "./Profile.css";
 import {
   deleteUser,
   getCurrentUser,
-  logout,
   updateUser,
+  fetchSurveyData,
 } from "../../auth/AuthService";
 import { useEffect, useState } from "react";
 import { DeleteConfirmationModal } from "../../auth/DeletionConfirmationModal";
@@ -11,6 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import UpdateUserModal from "../../auth/UpdateUserModal";
+import AnimeSurveyModal from "../../components/AnimeModalSurvey";
 
 export const Profile = () => {
   const [token, setToken] = useState(null);
@@ -19,6 +20,8 @@ export const Profile = () => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [isAnimeSurveyModalOpen, setIsAnimeSurveyModalOpen] = useState(false);
+  const [animeRecommendations, setAnimeRecommendations] = useState([]);
 
   const navigate = useNavigate();
 
@@ -103,6 +106,65 @@ export const Profile = () => {
     }
   };
 
+  const handleOpenAnimeSurvey = () => {
+    setIsAnimeSurveyModalOpen(true);
+  };
+
+  const handleCloseAnimeSurvey = () => {
+    setIsAnimeSurveyModalOpen(false);
+  };
+
+  const genreMapping = {
+    action: 1,
+    comedy: 4,
+    Drama: 8,
+  };
+
+  const handleSurveySubmit = async (genre, length) => {
+    try {
+      const genreId = genreMapping[genre.genre];
+      console.log(genreId);
+      const data = await fetchSurveyData(genreId, length);
+      console.log(data);
+      let animeRecommended = []; // Initialize an empty array for recommendations
+
+      for (let item of data) {
+        console.log("Checking item:", item.title, "Episodes:", item.episodes, "Length:", genre.length);
+
+        const episodes = parseInt(item.episodes, 10);
+
+        if (isNaN(episodes)) {
+          console.log("Skipping item due to invalid episode count");
+          continue;
+        }
+        
+        if (genre.length === "short" && episodes > 0 && episodes <= 12) {
+          animeRecommended.push(item);
+          console.log("Added to short list");
+        } else if (genre.length === "medium" && episodes >= 13 && episodes <= 24) {
+          animeRecommended.push(item);
+          console.log("Added to medium list");
+        } else if (genre.length === "long" && episodes >= 25) {
+          animeRecommended.push(item);
+          console.log("Added to long list");
+        }
+
+        if (animeRecommended.length >= 5) {
+          console.log("Reached 5 recommendations, stopping");
+          break;
+        }
+      }
+
+      console.log("Final recommendations:", animeRecommended);
+
+      setAnimeRecommendations(animeRecommended);
+      toast.success("Recommendations generated!");
+    } catch (error) {
+      console.error("Error getting recommendations:", error);
+      toast.error("Failed to get recommendations.");
+    }
+  };
+
   return (
     <div className="profile-container">
       <div className="profile-overlay"></div>
@@ -149,14 +211,28 @@ export const Profile = () => {
                 </div>
               </div>
               <div className="card-body profile-card-body d-flex flex-column align-items-center">
-                <h5 className="card-title mb-4">Card Title 2</h5>
-                <button className="btn btn-primary custom-btn mb-3">
-                  Button 1
+                <h5 className="card-title mb-4">Find Your Anime!</h5>
+                <button
+                  className="btn btn-primary custom-btn mb-3"
+                  onClick={handleOpenAnimeSurvey}
+                >
+                  TAKE SURVEY
                 </button>
-                <button className="btn btn-secondary custom-btn mb-3">
-                  Button 2
-                </button>
-                <button className="btn btn-info custom-btn">Button 3</button>
+                {animeRecommendations.length > 0 && (
+                  <div>
+                    <h6>Your Recommendations:</h6>
+                    <ul>
+                      {animeRecommendations.map((anime, index) => (
+                        <li className="fs-3"
+                        key={index}>
+                          {anime.title_english
+                            ? anime.title_english
+                            : anime.title}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -171,6 +247,11 @@ export const Profile = () => {
         isOpen={isUpdateModalOpen}
         onClose={handleCloseUpdateModal}
         onUpdate={handleUpdateUser}
+      />
+      <AnimeSurveyModal
+        isOpen={isAnimeSurveyModalOpen}
+        onClose={handleCloseAnimeSurvey}
+        onSubmit={(genre, length) => handleSurveySubmit(genre, length)}
       />
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
