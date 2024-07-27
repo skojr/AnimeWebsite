@@ -4,6 +4,7 @@ import { register, login } from "./AuthService";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Change
 import "./SignUp.css";
 
 export const SignUp = () => {
