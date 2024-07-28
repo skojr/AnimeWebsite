@@ -10,6 +10,10 @@ This project consists of two main components:
 
 2. **Backend**: Developed with Spring Boot. This branch contains the server-side logic, including user authentication and data handling.
 
+Other branches:
+1. **Token_auth**: Not necessary to use.
+2. **No_token_auth**: Not necessary to use.
+
 ### Features
 
 - **User Registration and Login**: Secure authentication for users to create accounts and log in.
@@ -17,4 +21,5 @@ This project consists of two main components:
 - **Personalized Recommendations**: After completing a survey, users receive recommendations for up to five anime based on their preferences.
 
 Feel free to explore!
+
 
