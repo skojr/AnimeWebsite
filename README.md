@@ -16,5 +16,5 @@ This project consists of two main components:
 - **Anime Browsing**: Users can browse a list of popular anime.
 - **Personalized Recommendations**: After completing a survey, users receive recommendations for up to five anime based on their preferences.
 
-Feel free to explore and contribute!
+Feel free to explore!
 
