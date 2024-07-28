@@ -1,8 +1,20 @@
-# React + Vite
+# README
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to my personal project!
 
-Currently, two official plugins are available:
+### Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project consists of two main components:
+
+1. **Frontend**: Implemented with React and Vite. This branch contains the code for the user interface and client-side interactions.
+
+2. **Backend**: Developed with Spring Boot. This branch contains the server-side logic, including user authentication and data handling.
+
+### Features
+
+- **User Registration and Login**: Secure authentication for users to create accounts and log in.
+- **Anime Browsing**: Users can browse a list of popular anime.
+- **Personalized Recommendations**: After completing a survey, users receive recommendations for up to five anime based on their preferences.
+
+Feel free to explore and contribute!
+
