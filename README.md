@@ -2,6 +2,9 @@
 
 Welcome to my personal project!
 
+## Directions to Use
+1. Have React Vite and Spring Boot installed. The frontend code (React and Vite) was made in VS Code, and the backend code (Spring Boot) was created in IntelliJ IDEA.
+
 ### Overview
 
 This project consists of two main components:
