@@ -1,0 +1,27 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: qrlMYSQL22!!
+    networks:
+      - my-network
+
+  app:
+    image: backend-api
+    networks:
+      - my-network
+    depends_on:
+      - db
+
+  ui:
+    image: backend-api
+    networks:
+      - my-network
+    depends_on:
+      - app
+
+
+networks:
+  my-network:
+    driver: bridge
