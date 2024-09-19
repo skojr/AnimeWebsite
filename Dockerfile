@@ -20,4 +20,4 @@ EXPOSE 3000
 ENV NODE_ENV=development
 
 # Command to run the app using npm run dev
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev", "--", "--host"]
