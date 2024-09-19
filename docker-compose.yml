@@ -8,6 +8,8 @@ services:
       - my-network
     ports:
       - "3306:3306"  # Expose app service on port 8080
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
 
   app:
     image: backend-api
