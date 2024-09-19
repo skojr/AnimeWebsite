@@ -27,7 +27,9 @@ services:
     depends_on:
       - app
     ports:
-      - "3000:3000"  # Expose UI service on port 3000
+      - "5173:5173"  # Expose UI service on port 3000
+    environment:
+      - VITE_PORT=5173
 
 networks:
   my-network:
