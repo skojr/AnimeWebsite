@@ -6,6 +6,8 @@ services:
       MYSQL_ROOT_PASSWORD: qrlMYSQL22!!
     networks:
       - my-network
+    ports:
+      - "3306:3306"  # Expose app service on port 8080
 
   app:
     image: backend-api
@@ -13,14 +15,17 @@ services:
       - my-network
     depends_on:
       - db
+    ports:
+      - "8080:8080"  # Expose app service on port 8080
 
   ui:
-    image: backend-api
+    image: frontend-app
     networks:
       - my-network
     depends_on:
       - app
-
+    ports:
+      - "3000:3000"  # Expose UI service on port 3000
 
 networks:
   my-network:
