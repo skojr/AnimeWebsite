@@ -157,11 +157,11 @@ export const Profile = () => {
                 </button>
                 {animeRecommendations.length > 0 && (
                   <div>
-                    <h6>Your Recommendations:</h6>
-                    <ul>
+                    <h6 className="fs-2">Your Recommendations:</h6>
+                    <ul className="mt-3">
                       {animeRecommendations.map((anime, index) => (
-                        <li key={index}>
-                          {anime.title_english || anime.title}
+                        <li key={index} className="fs-3">
+                          {anime.title.english || anime.title.romanji}
                         </li>
                       ))}
                     </ul>

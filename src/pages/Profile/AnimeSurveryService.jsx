@@ -1,53 +1,63 @@
-export const fetchSurveyData = async (genreId, length) => {
-    const recommendations = [];
-    let currentPage = 1;
+import axios from "axios";
 
+const ANILIST_API_URL = "https://graphql.anilist.co";
+
+export const fetchSurveyData = async (genre, length) => {
     try {
-        // Loop through up to 5 pages
-        while (recommendations.length < 5 && currentPage <= 5) {
-            const response = await fetch(
-                `https://api.jikan.moe/v4/top/anime?genres=${genreId}&page=${currentPage}`
+        // GraphQL query to fetch anime data by genre
+        const query = `
+            query ($page: Int, $perPage: Int, $genre: [String]) {
+                Page(page: $page, perPage: $perPage) {
+                    media(genre_in: $genre, type: ANIME, sort: POPULARITY_DESC) {
+                        id
+                        title {
+                            romaji
+                            english
+                        }
+                        episodes
+                        genres
+                        averageScore
+                    }
+                }
+            }
+        `;
+
+        // Define variables for the query
+        const variables = {
+            page: 1, // Firs page
+            perPage: 20, // Number of results per page
+            genre: [genre], // Pass the genre as an array
+        };
+
+        // Make the POST request to AniList API
+        const response = await axios.post(
+            ANILIST_API_URL,
+            { query, variables },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        // Extract data from the response
+        const data = response.data.data.Page.media;
+        console.log("Fetched anime data:", data);
+
+        // Filter results by episode length
+        const filteredData = data.filter((anime) => {
+            const episodes = anime.episodes || 0;
+            return (
+                (length === "short" && episodes <= 12) ||
+                (length === "medium" && episodes > 12 && episodes <= 24) ||
+                (length === "long" && episodes > 24)
             );
+        });
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch anime data");
-            }
-
-            const data = await response.json();
-
-            if (data.data.length === 0) {
-                // No more results, break out of the loop
-                break;
-            }
-
-            // Filter by Top Genre and Length
-            const filteredData = data.data.filter((anime) => {
-                // Check if the first genre matches the given genreId
-                const isTopGenre = anime.genres.length > 0 && anime.genres[0].mal_id === genreId;
-
-                // Check episode length
-                const episodes = anime.episodes || 0; // Ensure episodes is a number
-                const matchesLength =
-                    (length === "short" && episodes <= 12) ||
-                    (length === "medium" && episodes > 12 && episodes <= 24) ||
-                    (length === "long" && episodes > 24);
-
-                return isTopGenre && matchesLength;
-            });
-
-            // Add filtered data to recommendations
-            recommendations.push(...filteredData);
-
-            // Increment the page
-            currentPage++;
-        }
-
-        // Return the top 5 recommendations
-        return recommendations.slice(0, 5);
+        // Return up to 5 recommendations
+        return filteredData.slice(0, 5);
     } catch (error) {
-        console.error("Error fetching survey data:", error);
-        throw error;
+        console.error("Error fetching AniList data:", error.response || error.message);
+        throw new Error("Failed to fetch anime data from AniList.");
     }
 };
-
-

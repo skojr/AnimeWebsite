@@ -8,7 +8,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
 }
 
 .about-overlay {
@@ -17,82 +16,92 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for better contrast */
 }
 
 .abt-content-container {
-width: 70%;
+  width: 85%;
+  max-width: 1200px;
+  z-index: 2;
 }
-
-.about-detail {
-  color: white;
-  font-weight: bold;
-  font-size: 22px;
-  line-height: 2;
-  margin-top: 10%;
-  margin-right: 10%;
-  text-align: left;
-  padding: auto;
-}
-
 
 .abt-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 30px; /* This creates space between the columns */
+  gap: 30px; /* Spacing between columns */
 }
 
 .col-md-6 {
   flex: 1;
-  min-width: 300px; /* Adjust as needed */
+  min-width: 350px; /* Ensures better scaling on smaller screens */
 }
 
-.about-image-container {
-  background-color: rgba(40, 44, 52, 0.85); /* Dark grayish with 85% opacity */
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px); /* Adds a blur effect to content behind the card */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  overflow-y: auto;
-  height: 70vh;
-  margin-top: 3%;
-}
-
+.about-image-container,
 .about-synopsis-container {
-   background-color: rgba(40, 44, 52, 0.85); /* Dark grayish with 85% opacity */
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  height: 100%;
-  max-height: none;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px); /* Adds a blur effect to content behind the card */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background-color: rgba(20, 24, 34, 0.9); /* Darker tone for improved contrast */
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(8px); /* More prominent blur effect */
+  border: 1px solid rgba(255, 255, 255, 0.2);
   overflow-y: auto;
-  padding: auto;
-  margin-top: 3%;
+}
 
+.about-image-container:hover,
+.about-synopsis-container:hover {
+  transform: translateY(-10px); /* Subtle hover effect */
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6); /* More pronounced shadow on hover */
+}
+
+.anime-title,
+.synopsis-title {
+  color: #ffcc00; /* Golden-yellow for emphasis */
+  font-size: 32px;
+  font-weight: bold;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.synopsis-text,
+.about-detail {
+  color: #f0f0f0;
+  font-size: 18px;
+  line-height: 1.8; /* Better readability */
+  padding: 20px;
 }
 
 .synopsis-text {
-  color: white;
-  font-weight: bold;
-  font-size: 22px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  padding: 25px;
-  margin-top: 5%;
+  text-align: justify;
 }
 
-.synopsis-title {
-  margin-top: 3%;
-  margin-bottom: 2%;
+.anime-image {
+  max-width: 100%;
+  border-radius: 10px;
+  margin: 15px auto;
+  display: block;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-.anime-title {
-  margin-top: 3%;
-  margin-bottom: 2%;
+@media (max-width: 768px) {
+  .abt-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .about-image-container,
+  .about-synopsis-container {
+    height: auto; /* Allow content to adjust dynamically */
+  }
+
+  .anime-title,
+  .synopsis-title {
+    font-size: 28px;
+  }
+
+  .synopsis-text,
+  .about-detail {
+    font-size: 16px;
+    line-height: 1.6;
+  }
 }
+

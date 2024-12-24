@@ -34,8 +34,8 @@ export const Login = () => {
       <div className="login-overlay"></div>
       <div className="form-container">
         <form className="form" onSubmit={handleLogin}>
-          <h1 className="form-header">Login</h1>
-          <div className="mb-3">
+          <h1 className="form-header mt-5">Login</h1>
+          <div className="mb-2">
             <label htmlFor="exampleInputEmail1" className="form-label fs-2 text-dark">
               Email address
             </label>
@@ -49,7 +49,7 @@ export const Login = () => {
             />
           </div>
 
-          <div className="mb-3">
+          <div className="mb-2">
             <label htmlFor="exampleInputPassword1" className="form-label fs-2 text-dark">
               Password
             </label>
@@ -62,14 +62,14 @@ export const Login = () => {
             />
           </div>
 
-          <button type="submit" className="form-btn btn btn-primary fs-2">
+          <button type="submit" className="form-btn btn fs-2 text-light">
             Login
           </button>
 
-          <div className="signup-text">Don't have an account?</div>
+          <div className="fs-2 mt-5">Don't have an account?</div>
           <button
             type="submit"
-            className="form-btn btn btn-primary fs-2 mb-5"
+            className="form-btn fs-2 btn mb-5 text-light"
             onClick={handleSignUp}
           >
             Sign Up

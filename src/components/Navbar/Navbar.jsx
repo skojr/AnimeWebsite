@@ -82,7 +82,7 @@ export const Navbar = () => {
             >
               Home
             </a>
-            <a className="nav-link small-nav-item" href="#">
+            <a className="nav-link small-nav-item" href="/profile">
               Survey
             </a>
             <a

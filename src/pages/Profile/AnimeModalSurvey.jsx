@@ -9,9 +9,9 @@ const AnimeSurveyModal = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
 
   const genreMapping = {
-    action: 1,
-    sliceOfLife: 36,
-    shounen: 27,
+    action: "Action",
+    sliceOfLife: "Slice of Life",
+    thriller: "Thriller",
   };
   
   const handleSubmit = (e) => {
@@ -26,7 +26,6 @@ const AnimeSurveyModal = ({ isOpen, onClose, onSubmit }) => {
     onSubmit({ genreId, length }); // Pass genreId instead of genre name
     onClose();
   };
-  
 
   return (
     <div className="modal">
@@ -34,31 +33,31 @@ const AnimeSurveyModal = ({ isOpen, onClose, onSubmit }) => {
         <h2 className="modal-title">Anime Preference Survey</h2>
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
-            <label htmlFor="genre" className="form-label">
+            <label htmlFor="genre" className="form-label fs-3">
               Favorite Genre:
             </label>
             <select
               id="genre"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
-              className="form-select"
+              className="form-select fs-3"
             >
               <option value="">Select Genre</option>
               <option value="action">Action</option>
               <option value="sliceOfLife">Slice of Life</option>
-              <option value="mystery">Shounen</option>
+              <option value="thriller">Thriller</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label htmlFor="length" className="form-label">
+            <label htmlFor="length" className="form-label fs-3">
               Preferred Length:
             </label>
             <select
               id="length"
               value={length}
               onChange={(e) => setLength(e.target.value)}
-              className="form-select"
+              className="form-select fs-3"
             >
               <option value="">Select Length</option>
               <option value="short">Short (1-12 episodes)</option>
@@ -68,12 +67,12 @@ const AnimeSurveyModal = ({ isOpen, onClose, onSubmit }) => {
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary fs-3">
               Get Recommendations
             </button>
             <button
               type="button"
-              className="btn btn-secondary"
+              className="btn btn-secondary fs-3"
               onClick={onClose}
             >
               Cancel
