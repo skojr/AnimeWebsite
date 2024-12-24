@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./Login.css";
-import { getCurrentUser, login } from "./AuthService";
+import { login } from "./AuthService";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,16 +14,11 @@ export const Login = () => {
     e.preventDefault();
     try {
       await login(email, password);
-      const user = await getCurrentUser();
-      if (user != null) {
-        toast.success("Logged in successfully!");
-        setTimeout(() => {
-          navigate("/", { replace: true });
-          window.location.reload();
-        }, 3000);
-      } else {
-        toast.error("Login failed. Please check your credentials.");
-      }
+      toast.success("Logged in successfully!");
+      setTimeout(() => {
+        navigate("/", { replace: true });
+        window.location.reload();
+      }, 3000);
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Login failed. Please check your credentials.");
@@ -41,7 +36,7 @@ export const Login = () => {
         <form className="form" onSubmit={handleLogin}>
           <h1 className="form-header">Login</h1>
           <div className="mb-3">
-            <label htmlFor="exampleInputEmail1" className="form-label">
+            <label htmlFor="exampleInputEmail1" className="form-label fs-2 text-dark">
               Email address
             </label>
             <input
@@ -55,7 +50,7 @@ export const Login = () => {
           </div>
 
           <div className="mb-3">
-            <label htmlFor="exampleInputPassword1" className="form-label">
+            <label htmlFor="exampleInputPassword1" className="form-label fs-2 text-dark">
               Password
             </label>
             <input
@@ -67,14 +62,14 @@ export const Login = () => {
             />
           </div>
 
-          <button type="submit" className="form-btn btn btn-primary">
+          <button type="submit" className="form-btn btn btn-primary fs-2">
             Login
           </button>
 
-          <div className="signup-text mb-3">Don't have an account?</div>
+          <div className="signup-text">Don't have an account?</div>
           <button
             type="submit"
-            className="form-btn btn btn-primary"
+            className="form-btn btn btn-primary fs-2 mb-5"
             onClick={handleSignUp}
           >
             Sign Up

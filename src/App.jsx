@@ -8,8 +8,6 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { SignUp } from "./auth/SignUp.jsx";
 import { Profile } from "./pages/Profile/Profile.jsx";
 import { ProtectedRoutes } from "./auth/ProtectedRoutes.jsx";
-import { useEffect, useState } from "react";
-import { getCurrentUser } from "./auth/AuthService.jsx";
 
 const Layout = () => (
   <>

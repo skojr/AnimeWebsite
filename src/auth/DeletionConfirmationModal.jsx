@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
 export const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
@@ -13,19 +14,39 @@ export const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
   return (
     <div className="modal">
       <div className="modal-content">
-        <h2 className='mb-3 text-light'>Confirm Deletion</h2>
-        <form onSubmit={handleSubmit}>
+        <h2 className="modal-title">Confirm Deletion</h2>
+        <form onSubmit={handleSubmit} className="modal-form">
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
+            className="form-input"
             required
           />
-          <button className="btn btn-danger modal-btn mx-2" type="submit">Confirm Delete</button>
-          <button className="btn btn-primary modal-btn" type="button" onClick={onClose}>Cancel</button>
+          <div className="form-actions">
+            <button className="btn btn-danger modal-btn" type="submit">
+              Confirm Delete
+            </button>
+            <button className="btn btn-primary modal-btn" type="button" onClick={onClose}>
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </div>
   );
+};
+
+// PropTypes Validation
+DeleteConfirmationModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  error: PropTypes.string,
+};
+
+// Default Props
+DeleteConfirmationModal.defaultProps = {
+  error: null,
 };

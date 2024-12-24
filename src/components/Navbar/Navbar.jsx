@@ -1,32 +1,41 @@
+import React, { useEffect, useState } from "react";
 import { animateScroll } from "react-scroll";
 import "./Navbar.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  getCurrentUser,
-  isAuthenticated,
-  logout,
-} from "../../auth/AuthService";
-import { useEffect, useState } from "react";
+import { logout, getUser } from "../../auth/AuthService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export const Navbar = () => {
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const token = getCurrentUser();
+  // Fetch the authenticated user on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = null; // Replace with logic to get the userId if needed.
+        const userData = await getUser(userId);
+        setUser(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setUser(null); // Clear user state if not authenticated
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleLogout = () => {
     try {
-      localStorage.clear();
-      localStorage.removeItem("token");
+      logout(); // Clear session on backend and redirect
       toast.success("Logged out successfully!");
       setTimeout(() => {
         navigate("/", { replace: true });
         window.location.reload();
       }, 3000);
     } catch (error) {
-      console.log(error.message);
+      console.error("Logout error:", error.message);
     }
   };
 
@@ -84,7 +93,7 @@ export const Navbar = () => {
             >
               Profile
             </a>
-            {token ? (
+            {user ? (
               <>
                 <button
                   className="nav-link mx-5 btn btn-link small-nav-item"
@@ -93,7 +102,7 @@ export const Navbar = () => {
                   Logout
                 </button>
                 <div className="small-nav-item nav-item text-light ms-3">
-                  {token.sub}
+                  {user.email} {/* Render email from user data */}
                 </div>
               </>
             ) : (

@@ -1,232 +1,209 @@
-// import axios from "axios";
-
-// const baseUrl = "http://localhost:8080/api";
-
-// export const register = async (email, password) => {
-//   try {
-//     await axios.post(`${baseUrl}/users/auth/register`, { email, password });
-//     return login(email, password);
-//   } catch (error) {
-//     handleError(error, "Registration failed");
-//   }
-// };
-
-// export const login = async (email, password) => {
-//   try {
-//     const response = await axios.post(`${baseUrl}/users/auth/authenticate`, {
-//       email,
-//       password,
-//     });
-//     localStorage.setItem("userId", response.data.id);
-//     console.log("Success");
-//     return response.data;
-//   } catch (error) {
-//     handleError(error, "Login failed");
-//   }
-// };
-
-// export const logout = async () => {
-//   try {
-//     localStorage.removeItem("userId");
-//     window.location.reload();
-//   } catch (error) {
-//     console.error("Logout error:", error);
-//   }
-// };
-
-// export const getCurrentUser = async () => {
-//   const userId = localStorage.getItem("userId");
-//   if (!userId || userId === "null" || userId === "") {
-//     return null;
-//   }
-//   try {
-//     const response = await axios.get(`${baseUrl}/users/${userId}`);
-//     console.log(response.data);
-//     return response.data;
-//   } catch (error) {
-//     handleError(error, "Failed to fetch user data");
-//     return null;
-//   }
-// };
-// const handleError = (error, defaultMessage) => {
-//   if (error.response) {
-//     throw new Error(
-//       error.response.data.message ||
-//         `${defaultMessage}: ${error.response.status}`
-//     );
-//   } else if (error.request) {
-//     throw new Error("No response received from server");
-//   } else {
-//     throw new Error("Error setting up the request");
-//   }
-// };
-
 import axios from "axios";
-import api from "../components/api";
-import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
-const baseUrl = "http://localhost:8080/api";
-export const register = async (email, password) => {
-  try {
-    await axios.post(baseUrl + "/users/auth/register", { email, password });
-    login(email, password);
-  } catch (error) {
-    console.error("Full error object:", error);
-    if (error.response) {
-      throw new Error(
-        error.response.data.message || `Error: ${error.response.status}`
-      );
-    } else if (error.request) {
-      throw new Error("No response received from server");
-    } else {
-      throw new Error("Error setting up the request");
+
+const baseUrl = "http://localhost:8080/api"; // Backend base URL
+
+// Axios instance with base configuration
+export const apiClient = axios.create({
+  baseURL: baseUrl,
+  withCredentials: true, // Automatically include cookies in requests
+});
+
+// Intercept responses to handle expired sessions globally
+apiClient.interceptors.response.use(
+  (response) => response, // Pass through successful responses
+  (error) => {
+    if (error.response?.status === 401) {
+      toast.error("Session expired. Please log in again.");
+      window.location.href = "/login"; // Redirect to login
     }
+    return Promise.reject(error);
   }
+);
+
+// Helper: Get CSRF token from cookies
+const getCsrfTokenFromCookie = () => {
+  const csrfCookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("csrfToken="));
+  return csrfCookie ? csrfCookie.split("=")[1] : null;
 };
 
+// User Login
 export const login = async (email, password) => {
   try {
-    // Ensure no old token is sent
-    const response = await axios.post(baseUrl + "/users/auth/authenticate", {
+    const response = await apiClient.post("/users/auth/authenticate", {
       email,
       password,
     });
+
     console.log("Login response:", response.data);
-    if (response.data.token) {
-      localStorage.setItem("token", response.data.token);
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${response.data.token}`;
+
+    // Set CSRF token globally in Axios headers
+    const csrfToken = getCsrfTokenFromCookie();
+    if (csrfToken) {
+      apiClient.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
+    } else {
+      console.warn("No CSRF token found in cookies.");
     }
-    // localStorage.setItem("userId:", response.data.id)
+
     return response.data;
   } catch (error) {
-    console.error(
-      "Login error:",
-      error.response ? error.response.data : error.message
-    );
+    console.error("Login error:", error.response?.data || error.message);
     throw error;
   }
 };
 
-export const logout = async () => {
+// User Registration
+export const register = async (email, password) => {
   try {
-    localStorage.clear();
-    // localStorage.removeItem("userId");
-    localStorage.removeItem("token");
-    sessionStorage.clear();
-    window.location.reload();
+    // Make a POST request to register the user
+    const registrationResponse = await apiClient.post("/users/auth/register", {
+      email,
+      password,
+    });
+    console.log("Registration successful:", registrationResponse.data);
+
+    // Log the user in automatically after successful registration
+    const loginResponse = await login(email, password);
+    return loginResponse; // Return the login response
   } catch (error) {
-    console.error("Logout error:", error);
+    console.error("Registration error:", error.response?.data || error.message);
+    throw new Error(
+      error.response?.data.message || "Failed to register user"
+    );
   }
 };
 
-export const getCurrentUser = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
+
+// User Logout
+export const logout = () => {
   try {
-    console.log(jwtDecode(token));
-    return jwtDecode(token);
+    // Clear browser cookies and headers
+    document.cookie = "jwt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; SameSite=Strict;";
+    document.cookie = "csrfToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; SameSite=Strict;";
+
+    // Reset default headers for Axios
+    delete apiClient.defaults.headers.common["Authorization"];
+    delete apiClient.defaults.headers.common["X-CSRF-TOKEN"];
+
+    // Inform the user and redirect to login
+    toast.info("Logged out successfully.");
+    setTimeout(() => {
+      window.location.href = "/login"; // Redirect to login page
+    }, 1500); // Delay slightly to allow the toast message to display
   } catch (error) {
-    console.error("Error decoding token:", error);
-    return null;
+    console.error("Logout error:", error.message);
+    toast.error("An error occurred during logout.");
   }
 };
 
-export const deleteUser = async (password) => {
-    const token = localStorage.getItem("token");
-    const decodedToken = jwtDecode(token);
 
-    if (!token || !decodedToken) {
-        throw new Error("User not authenticated");
+// Get Current User
+export const getUser = async () => {
+  try {
+    // Retrieve CSRF token from cookies
+    const csrfToken = getCsrfTokenFromCookie();
+    if (!csrfToken) {
+      throw new Error("CSRF token is missing.");
     }
 
-    const userId = decodedToken.userId; // Make sure this matches the property name in your token
-
-    try {
-        const response = await axios.delete(`${baseUrl}/users/${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            data: { password } // Send password in the request body
-        });
-
-        console.log("Response:", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("Delete user error:", error.response || error);
-        throw new Error(error.response?.data || error.message || "Failed to delete user");
-    }
-};
-
-export const updateUser = async (updateData) => {
-  const decodedToken = getCurrentUser();
-  const originalToken = localStorage.getItem("token");
-
-  if (!decodedToken || !originalToken) {
-    throw new Error("User not authenticated");
-  }
-
-  const userId = decodedToken.userId; // Make sure this matches the property name in your token
-
-  try {
-    const response = await axios.put(`${baseUrl}/users/${userId}`, updateData, {
+    // Make GET request to fetch the current user
+    const response = await apiClient.get(`/users/getUser`, {
       headers: {
-        Authorization: `Bearer ${originalToken}`,
-        "Content-Type": "application/json",
+        "X-CSRF-TOKEN": csrfToken, // Include CSRF token in the request header
       },
     });
 
-    console.log("Response:", response.data);
+    console.log("User data:", response.data);
     return response.data;
   } catch (error) {
-    if (error.response) {
-      console.error("Error response:", error.response.data);
-      throw new Error(error.response.data.message || "Failed to update user");
-    } else if (error.request) {
-      console.error("No response received from server:", error.request);
-      throw new Error("No response received from server");
-    } else {
-      console.error("Error setting up the request:", error.message);
-      throw new Error("Error in setting up the request");
+    console.error("Get user error:", error.response || error.message);
+
+    // Handle 401 errors (unauthorized) gracefully
+    if (error.response?.status === 401) {
+      console.error("Unauthorized access. Redirecting to login.");
+      window.location.href = "/login";
     }
+
+    // Throw a user-friendly error message
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch user data"
+    );
   }
 };
 
-const map = {
-    "Short": 12,
-    "Medium": 13,
-    "Long": 25
-}
 
-export const fetchSurveyData = async (genreId, lengthCategory) => {
+// Update User Information
+export const updateUser = async (updateData) => {
+  try {
+    // Retrieve CSRF token from cookies
+    const csrfToken = getCsrfTokenFromCookie();
+    if (!csrfToken) {
+      throw new Error("CSRF token is missing.");
+    }
+
+    // Make PUT request to update the user
+    const response = await apiClient.put(`/users/updateUser`, updateData, {
+      headers: {
+        "X-CSRF-TOKEN": csrfToken, // Include CSRF token in the request header
+      },
+    });
+
+    console.log("Update response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Update user error:", error.response || error.message);
+    throw new Error(
+      error.response?.data?.message || "Failed to update user"
+    );
+  }
+};
+
+
+// Delete User Account
+export const deleteUser = async (password) => {
+  try {
+    // Retrieve CSRF token from cookies
+    const csrfToken = getCsrfTokenFromCookie();
+    if (!csrfToken) {
+      throw new Error("CSRF token is missing.");
+    }
+
+    // Make DELETE request with CSRF token and password
+    const response = await apiClient.delete(`/users/deleteUser`, {
+      headers: {
+        "X-CSRF-TOKEN": csrfToken, // Include CSRF token in the request header
+      },
+      data: { password }, // Include the password in the body
+    });
+
+    console.log("Delete user response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Delete user error:", error.response || error.message);
+    throw new Error(
+      error.response?.data?.message || "Failed to delete user"
+    );
+  }
+};
+
+
+export const fetchSurveyData = async (genreId) => {
     const response = await axios.get(`https://api.jikan.moe/v4/anime?genres=${genreId}&order_by=popularity`);
     const data = response.data.data;
-    // const filteredByLength = response.data.data.filter(anime => {
-    //   switch(lengthCategory) {
-    //     case 'short':
-    //       return anime.episodes > 0 && anime.episodes <= 12;
-    //     case 'medium':
-    //       return anime.episodes > 12 && anime.episodes <= 24;
-    //     case 'long':
-    //       return anime.episodes > 24;
-    //     default:
-    //       return true;
-    //   }
-    // });
-  
     return data; // Return top 5
   };
 
-export const isAuthenticated = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return false;
-  try {
-    const decodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-    return decodedToken.exp > currentTime;
-  } catch (error) {
-    return false;
-  }
-};
+// export const isAuthenticated = () => {
+//   const token = localStorage.getItem("token");
+//   if (!token) return false;
+//   try {
+//     const decodedToken = jwtDecode(token);
+//     const currentTime = Date.now() / 1000;
+//     return decodedToken.exp > currentTime;
+//   } catch (error) {
+//     return false;
+//   }
+// };

@@ -1,37 +1,41 @@
 import "./Profile.css";
 import {
   deleteUser,
-  getCurrentUser,
   updateUser,
-  fetchSurveyData,
+  getUser, // Fetches current user details
 } from "../../auth/AuthService";
+import { fetchSurveyData } from "./AnimeSurveryService";
 import { useEffect, useState } from "react";
 import { DeleteConfirmationModal } from "../../auth/DeletionConfirmationModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import UpdateUserModal from "../../auth/UpdateUserModal";
-import AnimeSurveyModal from "../../components/AnimeModalSurvey";
+import AnimeSurveyModal from "./AnimeModalSurvey";
+import pfpImg from '../../assets/pfpImg.jpg';
+
 
 export const Profile = () => {
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null); // Store user details
   const [loading, setLoading] = useState(true);
+  const [animeRecommendations, setAnimeRecommendations] = useState([]);
 
+  // Modals
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
   const [isAnimeSurveyModalOpen, setIsAnimeSurveyModalOpen] = useState(false);
-  const [animeRecommendations, setAnimeRecommendations] = useState([]);
 
   const navigate = useNavigate();
 
+  // Fetch user data on component mount
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = await getCurrentUser();
-        setToken(token);
+        const userData = await getUser(); // Fetch user from API
+        setUser(userData);
       } catch (error) {
         console.error("Error fetching user:", error);
+        toast.error("Failed to load user data.");
       } finally {
         setLoading(false);
       }
@@ -39,195 +43,125 @@ export const Profile = () => {
     fetchUser();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  const handleDeleteClick = (item) => {
-    setItemToDelete(item);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleUpdateClick = () => {
-    setIsUpdateModalOpen(true);
-  };
-
-  const handleCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setItemToDelete(null);
-  };
-
-  const handleCloseUpdateModal = () => {
-    setIsUpdateModalOpen(false);
-  };
-
+  // Handle account deletion
   const handleConfirmDelete = async (password) => {
     try {
-      await deleteUser(password);
-      toast.success("Deleted user successfully!");
+      await deleteUser(password); // Call delete API
+      toast.success("Account deleted successfully!");
       setTimeout(() => {
         navigate("/", { replace: true });
         window.location.reload();
       }, 3000);
     } catch (error) {
-      console.log(error.message);
+      console.error("Error deleting account:", error);
+      toast.error("Failed to delete account.");
     }
   };
 
+  // Handle account update
   const handleUpdateUser = async (updateData) => {
     try {
-      await updateUser(updateData);
+      await updateUser(updateData); // Call update API
       setIsUpdateModalOpen(false);
       toast.info(
-        "Your account has been updated. You will be logged out in 3 seconds. Please log in again with your new credentials."
+        "Account updated. Logging out for security reasons. Please log in again."
       );
       setTimeout(() => {
-        localStorage.clear();
-        localStorage.removeItem("token");
         navigate("/login", { replace: true });
       }, 3000);
     } catch (error) {
-      console.log(error.message);
-      toast.error("Failed to update.");
+      console.error("Error updating account:", error);
+      toast.error("Failed to update account.");
     }
   };
 
-  const handleLogoutClick = () => {
+  // Handle survey submission
+  const handleSurveySubmit = async ({genreId, length}) => {
     try {
-      localStorage.clear();
-      localStorage.removeItem("token");
-      toast.success("Logged out successfully!");
-      setTimeout(() => {
-        navigate("/", { replace: true });
-        window.location.reload();
-      }, 3000);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+      const data = await fetchSurveyData(genreId, length); // Fetch survey data
 
-  const handleOpenAnimeSurvey = () => {
-    setIsAnimeSurveyModalOpen(true);
-  };
-
-  const handleCloseAnimeSurvey = () => {
-    setIsAnimeSurveyModalOpen(false);
-  };
-
-  const genreMapping = {
-    action: 1,
-    comedy: 4,
-    Drama: 8,
-  };
-
-  const handleSurveySubmit = async (genre, length) => {
-    try {
-      const genreId = genreMapping[genre.genre];
-      console.log(genreId);
-      const data = await fetchSurveyData(genreId, length);
-      console.log(data);
-      let animeRecommended = []; // Initialize an empty array for recommendations
-
-      for (let item of data) {
-        console.log("Checking item:", item.title, "Episodes:", item.episodes, "Length:", genre.length);
-
+      // Filter recommendations based on length
+      const recommendations = data.filter((item) => {
         const episodes = parseInt(item.episodes, 10);
+        if (isNaN(episodes)) return false;
+        return (
+          (length === "short" && episodes <= 12) ||
+          (length === "medium" && episodes > 12 && episodes <= 24) ||
+          (length === "long" && episodes > 24)
+        );
+      }).slice(0, 5); // Limit to top 5 recommendations
 
-        if (isNaN(episodes)) {
-          console.log("Skipping item due to invalid episode count");
-          continue;
-        }
-        
-        if (genre.length === "short" && episodes > 0 && episodes <= 12) {
-          animeRecommended.push(item);
-          console.log("Added to short list");
-        } else if (genre.length === "medium" && episodes >= 13 && episodes <= 24) {
-          animeRecommended.push(item);
-          console.log("Added to medium list");
-        } else if (genre.length === "long" && episodes >= 25) {
-          animeRecommended.push(item);
-          console.log("Added to long list");
-        }
-
-        if (animeRecommended.length >= 5) {
-          console.log("Reached 5 recommendations, stopping");
-          break;
-        }
-      }
-
-      console.log("Final recommendations:", animeRecommended);
-
-      setAnimeRecommendations(animeRecommended);
-      toast.success("Recommendations generated!");
+      setAnimeRecommendations(recommendations);
+      toast.success("Anime recommendations updated!");
     } catch (error) {
-      console.error("Error getting recommendations:", error);
-      toast.error("Failed to get recommendations.");
+      console.error("Error fetching recommendations:", error);
+      toast.error("Failed to fetch anime recommendations.");
     }
   };
+
+  if (loading) {
+    return <div>Loading user data...</div>;
+  }
 
   return (
     <div className="profile-container">
-      <div className="profile-overlay"></div>
       <div className="container">
         <div className="row g-4">
+          {/* User Profile */}
           <div className="col-md-6">
             <div className="card custom-card">
               <div className="card-header gradient-header">
                 <div className="image-circle">
-                  <img src="path/to/image1.jpg" alt="Profile 1" />
+                  <img src={pfpImg} alt="Profile" />
                 </div>
               </div>
-              <div className="card-body d-flex flex-column align-items-center">
-                <h5 className="card-title mb-4 mt-5">{token.sub}</h5>
+              <div className="card-body text-center">
+                <h5 className="card-title mb-4 mt-5">{user.email}</h5>
                 <button
-                  type="click"
-                  onClick={handleUpdateClick}
-                  className="btn btn-primary custom-btn mb-3"
+                  className="btn btn-primary custom-btn mb-3 fs-2"
+                  onClick={() => setIsUpdateModalOpen(true)}
                 >
-                  UPDATE ACCOUNT
+                  Update Account
                 </button>
                 <button
-                  type="click"
-                  onClick={handleLogoutClick}
-                  className="btn btn-primary custom-btn mb-3"
+                  className="btn btn-primary custom-btn mb-3 fs-2"
+                  onClick={() => navigate("/logout")}
                 >
-                  LOGOUT
+                  Logout
                 </button>
                 <button
-                  type="click"
-                  className="btn btn-danger delete-btn"
-                  onClick={handleDeleteClick}
+                  className="btn btn-danger delete-btn fs-2"
+                  onClick={() => setIsDeleteModalOpen(true)}
                 >
-                  DELETE ACCOUNT
+                  Delete Account
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Anime Survey */}
           <div className="col-md-6">
             <div className="card custom-card">
               <div className="card-header gradient-header">
                 <div className="image-circle">
-                  <img src="path/to/image2.jpg" alt="Profile 2" />
+                  <img src={pfpImg} alt="Anime" />
                 </div>
               </div>
-              <div className="card-body profile-card-body d-flex flex-column align-items-center">
-                <h5 className="card-title mb-4">Find Your Anime!</h5>
+              <div className="card-body text-center">
+                <h5 className="card-title mt-5">Find Your Anime!</h5>
                 <button
-                  className="btn btn-primary custom-btn mb-3"
-                  onClick={handleOpenAnimeSurvey}
+                  className="btn btn-primary custom-btn mb-3 fs-2"
+                  onClick={() => setIsAnimeSurveyModalOpen(true)}
                 >
-                  TAKE SURVEY
+                  Take Survey
                 </button>
                 {animeRecommendations.length > 0 && (
                   <div>
                     <h6>Your Recommendations:</h6>
                     <ul>
                       {animeRecommendations.map((anime, index) => (
-                        <li className="fs-3"
-                        key={index}>
-                          {anime.title_english
-                            ? anime.title_english
-                            : anime.title}
+                        <li key={index}>
+                          {anime.title_english || anime.title}
                         </li>
                       ))}
                     </ul>
@@ -238,21 +172,24 @@ export const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}
-        onClose={handleCloseDeleteModal}
+        onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
       />
       <UpdateUserModal
         isOpen={isUpdateModalOpen}
-        onClose={handleCloseUpdateModal}
+        onClose={() => setIsUpdateModalOpen(false)}
         onUpdate={handleUpdateUser}
       />
       <AnimeSurveyModal
         isOpen={isAnimeSurveyModalOpen}
-        onClose={handleCloseAnimeSurvey}
-        onSubmit={(genre, length) => handleSurveySubmit(genre, length)}
+        onClose={() => setIsAnimeSurveyModalOpen(false)}
+        onSubmit={handleSurveySubmit}
       />
+
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );

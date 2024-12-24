@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import './UpdateUserModal.css'; // Importing the CSS file
 
 const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
   const [email, setEmail] = useState('');
@@ -35,7 +37,6 @@ const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
       updateData.oldPassword = oldPassword;
       updateData.newPassword = newPassword;
     }
-
     onUpdate(updateData);
   };
 
@@ -66,7 +67,7 @@ const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
             </div>
           )}
           <div className='my-2'>
-            <label htmlFor="oldPassword" >Old Password:</label>
+            <label htmlFor="oldPassword" >Old Password (if changing password):</label>
             <input
               type="password"
               id="oldPassword"
@@ -75,7 +76,7 @@ const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
             />
           </div>
           <div className='my-2'>
-            <label htmlFor="newPassword" >New Password:</label>
+            <label htmlFor="newPassword" >New Password (if changing password):</label>
             <input
               type="password"
               id="newPassword"
@@ -89,6 +90,19 @@ const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
       </div>
     </div>
   );
+};
+
+// PropTypes Validation
+UpdateUserModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired, // Required boolean to determine if modal is open
+  onClose: PropTypes.func.isRequired, // Required function to handle closing the modal
+  onUpdate: PropTypes.func.isRequired, // Required function to handle updates
+  error: PropTypes.string, // Optional string for error messages
+};
+
+// Default Props
+UpdateUserModal.defaultProps = {
+  error: null, // Default error to null if not provided
 };
 
 export default UpdateUserModal;

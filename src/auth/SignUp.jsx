@@ -35,7 +35,7 @@ export const SignUp = () => {
         <form className="form" onSubmit={handleSignUp}>
           <h1 className="form-header">Sign Up</h1>
           <div className="mb-3">
-            <label htmlFor="exampleInputEmail1" className="form-label">
+            <label htmlFor="exampleInputEmail1" className="form-label fs-2 text-dark">
               Email address
             </label>
             <input
@@ -49,7 +49,7 @@ export const SignUp = () => {
           </div>
           
           <div className="mb-3">
-            <label htmlFor="exampleInputPassword1" className="form-label">
+            <label htmlFor="exampleInputPassword1" className="form-label fs-2 text-dark">
               Password
             </label>
             <input
@@ -61,7 +61,7 @@ export const SignUp = () => {
             />
           </div>
 
-          <button type="submit" className="form-btn btn btn-primary">
+          <button type="submit" className="form-btn btn btn-primary fs-2 mb-5">
             Sign Up
           </button>
         </form>
