@@ -1,8 +1,16 @@
 package com.example.websitebackend.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Objects;
 
+@Setter
+@Getter
 public class AuthenticationRequest {
+    // Getters and Setters
     private String email;
     private String password;
 
@@ -16,21 +24,8 @@ public class AuthenticationRequest {
         this.password = password;
     }
 
-    // Getters and Setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public HttpSession getSession(HttpServletRequest request) {
+        return request.getSession(true);
     }
 
     @Override

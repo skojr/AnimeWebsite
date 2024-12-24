@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -28,11 +29,11 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.cors((cors) -> {
-            cors.configurationSource(this.corsConfigurationSource);
+           cors.configurationSource(this.corsConfigurationSource);
         }).csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests((auth) -> {
             ((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)((AuthorizeHttpRequestsConfigurer.AuthorizedUrl)auth.requestMatchers(new String[]{"/api/users/auth/**"})).permitAll().requestMatchers(new String[]{"/api/users/**"})).hasAnyRole(new String[]{"USER", "ADMIN"}).requestMatchers(new String[]{"/api/admin/**"})).hasRole("ADMIN").anyRequest()).authenticated();
         }).sessionManagement((session) -> {
-            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
         }).authenticationProvider(this.authenticationProvider).addFilterBefore(this.jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return (SecurityFilterChain)http.build();
     }

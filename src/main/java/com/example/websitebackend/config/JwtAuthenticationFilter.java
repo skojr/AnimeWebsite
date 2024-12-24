@@ -4,6 +4,7 @@ import com.example.websitebackend.service.CustomUserDetailsService;
 import com.example.websitebackend.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -29,9 +30,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
+        Cookie[] cookies = request.getCookies();
+        String jwt = null;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("jwt")) {
+                    jwt = cookie.getValue();
+                }
+            }
+        }
+
+        if (jwt != null) {
             String userEmail = this.jwtService.extractUsername(jwt);
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
@@ -44,6 +53,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
+//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//            String jwt = authHeader.substring(7);
+//            String userEmail = this.jwtService.extractUsername(jwt);
+//            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+//                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+//                if (this.jwtService.isTokenValid(jwt, userDetails)) {
+//                    String role = this.jwtService.extractRole(jwt);
+//                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+//                            userDetails, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
+//                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                    SecurityContextHolder.getContext().setAuthentication(authToken);
+//                }
+//            }
+//        }
         filterChain.doFilter(request, response);
     }
 }
