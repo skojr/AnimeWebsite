@@ -37,7 +37,7 @@ public class AuthenticationService {
         }
 
         // Check if the email is already registered
-        if (repository.findByEmail(request.getEmail()).isPresent()) {
+        if (repository.existsByEmail(request.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already registered");
         }
         CustomUser user = CustomUser.builder().email(request.getEmail()).password(this.passwordEncoder.encode(request.getPassword())).role(Role.USER).build();
