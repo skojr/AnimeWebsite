@@ -75,6 +75,8 @@ public class AuthenticationService {
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(3600);
         response.addCookie(jwtCookie);
+        response.addHeader("Set-Cookie", "csrfToken=" + csrfToken + "; Path=/; HttpOnly=false; Secure; SameSite=None");
+        response.addHeader("Set-Cookie", "jwt=" + jwtToken + "; Path=/; HttpOnly=true; Secure; SameSite=None");
 
         return ResponseEntity.ok("User authenticated successfully");
     }
