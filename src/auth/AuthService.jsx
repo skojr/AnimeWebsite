@@ -92,7 +92,7 @@ export const logout = () => {
     toast.info("Logged out successfully.");
     setTimeout(() => {
       window.location.href = "/login"; // Redirect to login page
-    }, 1500); // Delay slightly to allow the toast message to display
+    }, 3000); // Delay slightly to allow the toast message to display
   } catch (error) {
     console.error("Logout error:", error.message);
     toast.error("An error occurred during logout.");

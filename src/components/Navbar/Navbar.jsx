@@ -29,7 +29,6 @@ export const Navbar = () => {
   const handleLogout = () => {
     try {
       logout(); // Clear session on backend and redirect
-      toast.success("Logged out successfully!");
       setTimeout(() => {
         navigate("/", { replace: true });
         window.location.reload();
