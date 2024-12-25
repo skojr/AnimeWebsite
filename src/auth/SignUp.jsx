@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { register, login } from "./AuthService";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { register, login, getUser } from "./AuthService";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Change
 import "./SignUp.css";
@@ -14,8 +14,12 @@ export const SignUp = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
+      if (getUser()) {
+        toast.error("User already registered.");
+        return;
+      }
       await register(email, password);
-      toast.success("Signed up successfully!")
+      toast.success("Signed up successfully!");
       setTimeout(() => {
         navigate("/", { replace: true });
         window.location.reload();
@@ -25,7 +29,6 @@ export const SignUp = () => {
     } catch (error) {
       toast.error("Registration failed" + error);
     }
-
   };
 
   return (
@@ -35,7 +38,10 @@ export const SignUp = () => {
         <form className="form" onSubmit={handleSignUp}>
           <h1 className="form-header">Sign Up</h1>
           <div className="mb-3">
-            <label htmlFor="exampleInputEmail1" className="form-label fs-2 text-dark">
+            <label
+              htmlFor="exampleInputEmail1"
+              className="form-label fs-2 text-dark"
+            >
               Email address
             </label>
             <input
@@ -47,9 +53,12 @@ export const SignUp = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          
+
           <div className="mb-3">
-            <label htmlFor="exampleInputPassword1" className="form-label fs-2 text-dark">
+            <label
+              htmlFor="exampleInputPassword1"
+              className="form-label fs-2 text-dark"
+            >
               Password
             </label>
             <input
@@ -61,7 +70,7 @@ export const SignUp = () => {
             />
           </div>
 
-          <button type="submit" className="form-btn btn btn-primary fs-2 mb-5">
+          <button type="submit" className="form-btn btn fs-2 mb-5 text-light">
             Sign Up
           </button>
         </form>

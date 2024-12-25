@@ -21,14 +21,14 @@ export const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
-            className="form-input"
+            className="form-input fs-3"
             required
           />
           <div className="form-actions">
-            <button className="btn btn-danger modal-btn" type="submit">
+            <button className="btn btn-danger modal-btn fs-2" type="submit">
               Confirm Delete
             </button>
-            <button className="btn btn-primary modal-btn" type="button" onClick={onClose}>
+            <button className="btn btn-primary modal-btn fs-2" type="button" onClick={onClose}>
               Cancel
             </button>
           </div>

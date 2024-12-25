@@ -2,7 +2,8 @@ import "./Profile.css";
 import {
   deleteUser,
   updateUser,
-  getUser, // Fetches current user details
+  getUser,
+  logout, // Fetches current user details
 } from "../../auth/AuthService";
 import { fetchSurveyData } from "./AnimeSurveryService";
 import { useEffect, useState } from "react";
@@ -54,7 +55,7 @@ export const Profile = () => {
       }, 3000);
     } catch (error) {
       console.error("Error deleting account:", error);
-      toast.error("Failed to delete account.");
+      toast.error("Incorrect password.");
     }
   };
 
@@ -125,7 +126,7 @@ export const Profile = () => {
                 </button>
                 <button
                   className="btn btn-primary custom-btn mb-3 fs-2"
-                  onClick={() => navigate("/logout")}
+                  onClick={() => logout()}
                 >
                   Logout
                 </button>
@@ -157,8 +158,8 @@ export const Profile = () => {
                 </button>
                 {animeRecommendations.length > 0 && (
                   <div>
-                    <h6 className="fs-2">Your Recommendations:</h6>
-                    <ul className="mt-3">
+                    <h6 className="fs-3">Your Recommendations:</h6>
+                    <ul className="">
                       {animeRecommendations.map((anime, index) => (
                         <li key={index} className="fs-3">
                           {anime.title.english || anime.title.romanji}

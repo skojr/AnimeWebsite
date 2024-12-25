@@ -47,7 +47,7 @@ const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className='me-2'>New Email:</label>
+            <label htmlFor="email" className='me-2 fs-4'>New Email:</label>
             <input
               type="email" 
               id="email"
@@ -57,7 +57,7 @@ const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
           </div>
           {email && (
             <div className='my-2'>
-              <label htmlFor="password" >Current Password (required for email update):</label>
+              <label htmlFor="password" className='fs-4'>Current Password (required for email update):</label>
               <input
                 type="password"
                 id="password"
@@ -67,7 +67,7 @@ const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
             </div>
           )}
           <div className='my-2'>
-            <label htmlFor="oldPassword" >Old Password (if changing password):</label>
+            <label htmlFor="oldPassword" className='fs-4'>Current Password (if changing password):</label>
             <input
               type="password"
               id="oldPassword"
@@ -76,7 +76,7 @@ const UpdateUserModal = ({ isOpen, onClose, onUpdate, error }) => {
             />
           </div>
           <div className='my-2'>
-            <label htmlFor="newPassword" >New Password (if changing password):</label>
+            <label htmlFor="newPassword" className='fs-4'>New Password (if changing password):</label>
             <input
               type="password"
               id="newPassword"
