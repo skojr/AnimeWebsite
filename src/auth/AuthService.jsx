@@ -1,13 +1,11 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-
-const baseUrl = "http://localhost:8080/api"; // Backend base URL
+const baseUrl = "https://d1zl6mlbb9yhpd.cloudfront.net/api"; // Backend base URL
 
 // Axios instance with base configuration
 export const apiClient = axios.create({
   baseURL: baseUrl,
-  withCredentials: true, // Automatically include cookies in requests
 });
 
 // Intercept responses to handle expired sessions globally
@@ -22,14 +20,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Helper: Get CSRF token from cookies
-const getCsrfTokenFromCookie = () => {
-  const csrfCookie = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("csrfToken="));
-  return csrfCookie ? csrfCookie.split("=")[1] : null;
-};
-
 // User Login
 export const login = async (email, password) => {
   try {
@@ -40,12 +30,13 @@ export const login = async (email, password) => {
 
     console.log("Login response:", response.data);
 
-    // Set CSRF token globally in Axios headers
-    const csrfToken = getCsrfTokenFromCookie();
-    if (csrfToken) {
-      apiClient.defaults.headers.common["X-CSRF-TOKEN"] = csrfToken;
+    // Store JWT token in localStorage
+    const jwtToken = response.data.token;
+    if (jwtToken) {
+      localStorage.setItem("jwtToken", jwtToken);
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${jwtToken}`;
     } else {
-      console.warn("No CSRF token found in cookies.");
+      throw new Error("Failed to retrieve JWT token from response");
     }
 
     return response.data;
@@ -71,22 +62,19 @@ export const register = async (email, password) => {
   } catch (error) {
     console.error("Registration error:", error.response?.data || error.message);
     throw new Error(
-      error.response?.data.message || "Failed to register user"
+      error.response?.data?.message || "Failed to register user"
     );
   }
 };
 
-
 // User Logout
 export const logout = () => {
   try {
-    // Clear browser cookies and headers
-    document.cookie = "jwt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; SameSite=Strict;";
-    document.cookie = "csrfToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT; Secure; SameSite=Strict;";
+    // Clear stored JWT token
+    localStorage.removeItem("jwtToken");
 
     // Reset default headers for Axios
     delete apiClient.defaults.headers.common["Authorization"];
-    delete apiClient.defaults.headers.common["X-CSRF-TOKEN"];
 
     // Inform the user and redirect to login
     toast.info("Logged out successfully.");
@@ -99,22 +87,11 @@ export const logout = () => {
   }
 };
 
-
 // Get Current User
 export const getUser = async () => {
   try {
-    // Retrieve CSRF token from cookies
-    const csrfToken = getCsrfTokenFromCookie();
-    if (!csrfToken) {
-      throw new Error("CSRF token is missing.");
-    }
-
     // Make GET request to fetch the current user
-    const response = await apiClient.get(`/users/getUser`, {
-      headers: {
-        "X-CSRF-TOKEN": csrfToken, // Include CSRF token in the request header
-      },
-    });
+    const response = await apiClient.get(`/users/getUser`);
 
     console.log("User data:", response.data);
     return response.data;
@@ -134,22 +111,11 @@ export const getUser = async () => {
   }
 };
 
-
 // Update User Information
 export const updateUser = async (updateData) => {
   try {
-    // Retrieve CSRF token from cookies
-    const csrfToken = getCsrfTokenFromCookie();
-    if (!csrfToken) {
-      throw new Error("CSRF token is missing.");
-    }
-
     // Make PUT request to update the user
-    const response = await apiClient.put(`/users/updateUser`, updateData, {
-      headers: {
-        "X-CSRF-TOKEN": csrfToken, // Include CSRF token in the request header
-      },
-    });
+    const response = await apiClient.put(`/users/updateUser`, updateData);
 
     console.log("Update response:", response.data);
     return response.data;
@@ -161,21 +127,11 @@ export const updateUser = async (updateData) => {
   }
 };
 
-
 // Delete User Account
 export const deleteUser = async (password) => {
   try {
-    // Retrieve CSRF token from cookies
-    const csrfToken = getCsrfTokenFromCookie();
-    if (!csrfToken) {
-      throw new Error("CSRF token is missing.");
-    }
-
-    // Make DELETE request with CSRF token and password
+    // Make DELETE request with the password
     const response = await apiClient.delete(`/users/deleteUser`, {
-      headers: {
-        "X-CSRF-TOKEN": csrfToken, // Include CSRF token in the request header
-      },
       data: { password }, // Include the password in the body
     });
 
@@ -188,6 +144,7 @@ export const deleteUser = async (password) => {
     );
   }
 };
+
 
 
 export const fetchSurveyData = async (genreId) => {

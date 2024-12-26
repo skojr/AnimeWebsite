@@ -14,10 +14,10 @@ export const SignUp = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      if (getUser()) {
-        toast.error("User already registered.");
-        return;
-      }
+      // if (getUser()) {
+      //   toast.error("User already registered.");
+      //   return;
+      // }
       await register(email, password);
       toast.success("Signed up successfully!");
       setTimeout(() => {
