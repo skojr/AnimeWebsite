@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 
-const baseUrl = "http://18.223.43.178:8080/api"; // Backend base URL
+const baseUrl = "http://3.147.44.135:8080/api"; // Backend base URL
 
 // Axios instance with base configuration
 export const apiClient = axios.create({
