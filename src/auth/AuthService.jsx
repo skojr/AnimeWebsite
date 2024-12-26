@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const baseUrl = "https://d1zl6mlbb9yhpd.cloudfront.net"; // Backend base URL
+const baseUrl = "https://d1zl6mlbb9yhpd.cloudfront.net/api"; // Backend base URL
 
 // Axios instance with base configuration
 export const apiClient = axios.create({
