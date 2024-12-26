@@ -61,22 +61,15 @@ public class AuthenticationService {
         String csrfToken = this.csrfService.generateToken(session);
 
         // Set up CSRF Token
-        Cookie csrfCookie = new Cookie("csrfToken", csrfToken);
-        csrfCookie.setHttpOnly(false);
-        csrfCookie.setSecure(true);
-        csrfCookie.setPath("/");
-        csrfCookie.setMaxAge(3600);
-        response.addCookie(csrfCookie);
+        response.addHeader("Set-Cookie",
+                "csrfToken=" + csrfToken +
+                        "; Path=/; HttpOnly=false; Secure; SameSite=None; Max-Age=3600");
 
         // Set HTTP-only cookie for JWT
-        Cookie jwtCookie = new Cookie("jwt", jwtToken);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(3600);
-        response.addCookie(jwtCookie);
-        response.addHeader("Set-Cookie", "csrfToken=" + csrfToken + "; Path=/; HttpOnly=false; Secure; SameSite=None");
-        response.addHeader("Set-Cookie", "jwt=" + jwtToken + "; Path=/; HttpOnly=true; Secure; SameSite=None");
+        response.addHeader("Set-Cookie",
+                "jwt=" + jwtToken +
+                        "; Path=/; HttpOnly=true; Secure; SameSite=None; Max-Age=3600");
+
 
         return ResponseEntity.ok("User authenticated successfully");
     }
